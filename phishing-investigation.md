@@ -1,67 +1,177 @@
 # Phishing Investigation Playbook
 
-## Objective
+## Overview
 
-Investigate suspicious phishing emails and determine whether they are malicious.
+This playbook provides a standardized process for investigating phishing incidents within an enterprise Security Operations Center (SOC).
 
-## Investigation Steps
+### Severity Classification
 
-### 1. Collect Email Information
+| Severity | Description                                  |
+| -------- | -------------------------------------------- |
+| Low      | Spam or benign phishing attempt              |
+| Medium   | User interaction occurred                    |
+| High     | Credential theft suspected                   |
+| Critical | Malware execution or multiple users affected |
 
-- Sender email address
-- Subject line
-- Recipient
-- Timestamp
+---
 
-### 2. Review Email Headers
+# MITRE ATT&CK Mapping
 
-Look for:
+| Technique | Description                       |
+| --------- | --------------------------------- |
+| T1566     | Phishing                          |
+| T1204     | User Execution                    |
+| T1059     | Command and Scripting Interpreter |
+| T1078     | Valid Accounts                    |
 
-- Sender IP
-- SPF results
-- DKIM results
-- DMARC results
+---
 
-### 3. Check Indicators of Compromise
+# Phase 1: Detection
+
+## Sources
+
+* User reported email
+* Microsoft Defender
+* Secure Email Gateway
+* Splunk Alert
+* CrowdStrike Alert
+
+## Initial Questions
+
+* Who received the email?
+* How many recipients?
+* Did anyone click?
+* Was an attachment opened?
+
+---
+
+# Phase 2: Triage
+
+## Gather Artifacts
+
+### Email Details
+
+* Sender
+* Recipient
+* Subject
+* Message-ID
+* Timestamp
+
+### Indicators
+
+* URLs
+* Domains
+* Attachments
+* Hashes
+* IP Addresses
+
+---
+
+# Phase 3: Investigation
+
+## Header Analysis
 
 Review:
 
-- URLs
-- Domains
-- Attachments
-- File hashes
+* SPF
+* DKIM
+* DMARC
 
-### 4. Threat Intelligence Check
+Check for:
 
-Validate indicators using:
+* Sender spoofing
+* Domain impersonation
+* Reply-to mismatch
 
-- VirusTotal
-- AbuseIPDB
-- URLScan
+## URL Analysis
 
-### 5. Determine Impact
+Validate URLs using:
 
-Identify:
+* VirusTotal
+* URLScan
+* AbuseIPDB
 
-- Users affected
-- Credentials exposed
-- Malware execution
+## Attachment Analysis
 
-## Escalation Criteria
+Review:
 
-Escalate immediately if:
+* SHA256 hash
+* File type
+* Macro execution
+* Sandbox results
 
-- Credential harvesting is confirmed
-- Malware attachment exists
-- Multiple users received the email
+---
 
-## Mitigation
+# Phase 4: Containment
 
-- Block sender
-- Block domains
-- Remove emails from mailboxes
-- Reset compromised credentials
+## Immediate Actions
 
-## MITRE ATT&CK
+* Quarantine email
+* Block sender
+* Block domains
+* Block URLs
+* Disable compromised accounts
 
-- T1566 - Phishing
+---
+
+# Phase 5: Eradication
+
+Remove:
+
+* Malicious emails
+* Persistence mechanisms
+* Malware artifacts
+
+Reset:
+
+* Passwords
+* Tokens
+* Sessions
+
+---
+
+# Phase 6: Recovery
+
+Verify:
+
+* User account integrity
+* Endpoint health
+* Mail flow
+
+Monitor:
+
+* Authentication activity
+* Endpoint detections
+
+---
+
+# Phase 7: Lessons Learned
+
+Document:
+
+* Root Cause
+* Impact
+* Indicators of Compromise
+* Detection Gaps
+* Recommended Improvements
+
+---
+
+# Splunk Queries
+
+## Failed Login Spike
+
+index=* EventCode=4625
+| stats count by user
+
+## Suspicious PowerShell
+
+index=* powershell
+| search "-enc"
+
+---
+
+# References
+
+* NIST SP 800-61 Incident Response Lifecycle
+* MITRE ATT&CK T1566 (Phishing)

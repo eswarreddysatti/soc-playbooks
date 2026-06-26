@@ -2,7 +2,7 @@
 
 > A collection of professionally documented Security Operations Center (SOC) incident response playbooks based on industry best practices.
 
----
+---  
 
 ## About
 
